@@ -1,0 +1,35 @@
+/* CSS for the root container, ensuring central alignment and padding */
+.root {
+    -fx-padding: 20;
+    -fx-background-color: #a8caff;
+    }
+
+/* CSS for all labels, setting font size and center alignment */
+.label {
+    -fx-font-size: 20px;  /* Adjusted font size for better visibility */
+    -fx-text-alignment: center;
+}
+
+/* CSS for the toggle button to position it correctly */
+.toggle-button {
+    -fx-alignment: baseline-right;
+}
+
+/* CSS for general VBox styling */
+.vbox {
+    -fx-spacing: 20;
+    -fx-alignment: center; /* Changed to center for uniformity */
+    -fx-padding: 20;
+}
+
+/* CSS to position the hyperlink at the bottom right of its container */
+.hyperlink {
+    -fx-padding: 5;
+    -fx-text-fill: #0077cc;
+    -fx-alignment: bottom-right;
+}
+.title-label{
+	 -fx-font-size: 24px;
+	 -fx-font-weight: bold;
+	 -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
+}

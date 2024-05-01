@@ -1,0 +1,7 @@
+.image-view {
+    -fx-alignment: center; /* Center the image within its container */    
+}
+
+.vbox {
+    -fx-alignment: center;    
+}
