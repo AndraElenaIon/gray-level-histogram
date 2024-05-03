@@ -39,5 +39,6 @@ public class HistogramUtils {
 	    }
 	    return series;
 	}
-
+	
+	
 }

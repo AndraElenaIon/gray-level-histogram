@@ -1,16 +1,22 @@
 package application;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
@@ -45,6 +51,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -352,13 +359,16 @@ public class ImageProcessorApp extends Application {
 
         // Creeaza si adauga layout-ul componentelor vizuale
         Label titleLabel = new Label("Histogram Data");
-        VBox layout = new VBox(10, titleLabel, tableView, treeTableView);
+        
+        HBox tables = new HBox(10, tableView, treeTableView);
+        VBox layout = new VBox(10, titleLabel, tables);
         layout.setPadding(new Insets(10));
 
         // Seteaza scena si arata fereastra
         Scene scene = new Scene(layout, 300, 500);  
         scene.getStylesheets().add(getClass().getResource("table.css").toExternalForm());
         titleLabel.getStyleClass().add("title-label");
+        layout.getStyleClass().add("vbox");
         tableStage.setScene(scene);
         tableStage.show();
     }
@@ -393,7 +403,11 @@ public class ImageProcessorApp extends Application {
             // Creeaza layout-ul pentru fereastra histogramei
             VBox layout = new VBox(10);
             Label titleLabel = new Label("Histogram");
-            layout.getChildren().addAll(titleLabel, histogramChart);
+            
+            Button saveButton = new Button("Save Histogram");
+            saveButton.setOnAction(e -> saveHistogramLocally(series));
+            
+            layout.getChildren().addAll(titleLabel, histogramChart, saveButton);
 
             // Verifica daca optiunea pentru afisarea imaginii este selectata
             if (showImageCheckbox.isSelected()) {
@@ -406,10 +420,55 @@ public class ImageProcessorApp extends Application {
             Scene scene = new Scene(layout, 1200, 1000);
             scene.getStylesheets().add(getClass().getResource("hist.css").toExternalForm()); // Adauga stilurile CSS
             titleLabel.getStyleClass().add("title-label");
+            layout.getStyleClass().add("vbox");
             histogramStage.setScene(scene); // Seteaza scena in fereastra histogramei
             histogramStage.show(); // Afiseaza fereastra histogramei
         }
     }
+    
+    private void saveHistogramLocally(XYChart.Series<String, Number> series) {
+        // Create a FileChooser to prompt the user to select the save location
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Histogram Image");
+        // Set the extension filter to restrict to image file formats
+        fileChooser.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("PNG Files", "*.png")
+            );
+        // Show the save dialog and get the selected file
+        File file = fileChooser.showSaveDialog(histogramStage);
+        if (file != null) {
+            try {
+                // Render the chart to a WritableImage
+                WritableImage writableImage = renderChartAsImage(histogramChart);
+                // Convert the WritableImage to a BufferedImage
+                BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
+                // Save the BufferedImage to the selected file
+                ImageIO.write(bufferedImage, getFileExtension(file.getName()), file);
+                System.out.println("Histogram image saved successfully.");
+            } catch (IOException e) {
+                System.out.println("Error saving histogram image: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // Method to render the chart as an image
+    private WritableImage renderChartAsImage(BarChart<String, Number> chart) {
+        SnapshotParameters parameters = new SnapshotParameters();
+        parameters.setDepthBuffer(true);
+        return chart.snapshot(parameters, null);
+    }
+
+    // Method to get the file extension from a file name
+    private String getFileExtension(String fileName) {
+        int dotIndex = fileName.lastIndexOf('.');
+        if (dotIndex == -1 || dotIndex == fileName.length() - 1) {
+            return ""; // No file extension found
+        }
+        return fileName.substring(dotIndex + 1).toLowerCase();
+    }
+
+
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private void openExtraWindow() {

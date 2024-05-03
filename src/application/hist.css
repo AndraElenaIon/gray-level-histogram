@@ -6,3 +6,6 @@
 .root{
 	-fx-padding: 10px;
 }
+.vbox{
+	-fx-alignment: center;
+}

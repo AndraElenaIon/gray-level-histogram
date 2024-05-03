@@ -3,3 +3,6 @@
     -fx-text-alignment: center;
     -fx-font-weight: bold;
 }
+.vbox{
+	-fx-alignment: center;
+}
